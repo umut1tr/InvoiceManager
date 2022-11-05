@@ -24,10 +24,9 @@ namespace IdentityApp.Authorization
         {
             
             // if not logged in or invoice is null
-            if(context.User == null || invoice == null)
-            {
+            if(context.User == null || invoice == null)            
                 return Task.CompletedTask;
-            }
+            
 
             // check if user wants to perform CRUD operation
             // if user wants to do something else just return him.

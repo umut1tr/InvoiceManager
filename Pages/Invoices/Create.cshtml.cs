@@ -11,12 +11,12 @@ namespace IdentityApp.Pages.Invoices
     {
         
 
-        public CreateModel(ApplicationDbContext context,
+        public CreateModel(
+            ApplicationDbContext context,
             IAuthorizationService authorizationService,
-            UserManager<IdentityUser> userManagert)
-            : base(context, authorizationService, userManagert)
-        {
-            
+            UserManager<IdentityUser> userManager)
+            : base(context, authorizationService, userManager)
+        {            
         }
 
         public IActionResult OnGet()
