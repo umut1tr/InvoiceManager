@@ -39,11 +39,9 @@ namespace IdentityApp.Authorization
             }
 
             // if Auth is fine
-            if(invoice.CreatorId == _userManager.GetUserId(context.User))
-            {
+            if(invoice.CreatorId == _userManager.GetUserId(context.User))            
                 context.Succeed(requirement);
-            }
-
+            
 
             // for every other case just return.
             return Task.CompletedTask;
