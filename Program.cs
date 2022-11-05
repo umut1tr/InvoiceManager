@@ -2,6 +2,7 @@ using IdentityApp.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using IdentityApp.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,9 @@ builder.Services.AddAuthorization(options =>
         .Build();
     
 });
+
+// everytime using something with Identity use Addscoped to register service else only do Add
+builder.Services.AddScoped<IAuthorizationHandler, InvoiceCreatorAuthorizationHandler>(); // registers our Creator Auth
 
 var app = builder.Build();
 
