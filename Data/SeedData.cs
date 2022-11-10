@@ -1,13 +1,36 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityApp.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityApp.Data
 {
 
     // This data will get called later from the Program.CS class when booting up
     public class SeedData
-    {
+    {        
 
-        private static async Task<string> EnsureUser(IServiceProvider serviceProvider, string initPw, string userName)
+
+        // here we cannot use DI so we use ServiceProvider again for DB Context
+        public static async Task Initialize(
+            IServiceProvider serviceProvider,
+            string password = "Demo1234!")
+        {
+
+            // creates Db context
+            using(var context = new ApplicationDbContext(
+                serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
+            {
+                // adds a manager acc
+                var managerUid = await EnsureUser(serviceProvider, "manager@demo.com", password);               
+
+                await EnsureRole(serviceProvider, managerUid, Constants.InvoiceManagersRole);
+            }
+        }
+
+
+
+        private static async Task<string> EnsureUser(IServiceProvider serviceProvider,
+            string userName, string initPw)
         {
             // can only gather it from serviceProvider otherwise no way to get the userManager
             var userManager = serviceProvider.GetService<UserManager<IdentityUser>>();
@@ -35,6 +58,32 @@ namespace IdentityApp.Data
             }
 
             return user.Id;
+        }
+
+
+        private static async Task<IdentityResult> EnsureRole(IServiceProvider serviceProvider, string uid, string role)
+        {
+
+            // make sure to have the RoleManger set up in the Program.cs as a servie
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+
+            IdentityResult ir;
+
+            if(await roleManager.RoleExistsAsync(role) == false)
+            {
+                ir = await roleManager.CreateAsync(new IdentityRole(role));
+            }
+
+            var userManager = serviceProvider.GetService<UserManager<IdentityUser>>();
+
+            var user = await userManager.FindByIdAsync(uid);
+
+            if (user == null)
+                throw new Exception("User not existing");
+
+            ir = await userManager.AddToRoleAsync(user, role);
+
+            return ir;
         }
     }
 }
