@@ -9,6 +9,7 @@
 
         public string InvoiceMonth { get; set; }
 
+        // who needs to pay this invoice?
         public string InvoiceOwner { get; set; }
 
         public string CreatorId { get; set; }

@@ -27,6 +27,7 @@ namespace IdentityApp.Authorization
 
     public class Constants
     {
+        // CRUD
         public static readonly string CreateOperationName = "Create";
         public static readonly string ReadOperationName = "Read";
         public static readonly string UpdateOperationName = "Update";
@@ -34,5 +35,7 @@ namespace IdentityApp.Authorization
 
         public static readonly string ApprovedOperationName = "Approved";
         public static readonly string RejectedOperationName = "Rejected";
+
+
     }
 }

@@ -10,13 +10,13 @@ using IdentityApp.Authorization;
 namespace IdentityApp.Pages.Invoices
 {
     public class EditModel : DI_BasePageModel
-    {      
+    {
         public EditModel(
             ApplicationDbContext context,
             IAuthorizationService authorizationService,
             UserManager<IdentityUser> userManager)
             : base(context, authorizationService, userManager)
-        {            
+        {
         }
 
         [BindProperty]
@@ -29,21 +29,22 @@ namespace IdentityApp.Pages.Invoices
                 return NotFound();
             }
 
-            Invoice =  await Context.Invoice.FirstOrDefaultAsync(m => m.InvoiceId == id);
+            // get invoice from id 
+            Invoice = await Context.Invoice.FirstOrDefaultAsync(m => m.InvoiceId == id);
 
             if (Invoice == null)
-            {
                 return NotFound();
-            }
 
-            // Authorization stuff
+
+            // Authorization to see if user is authorized
 
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                 User, Invoice, InvoiceOperations.Update);
 
-            if (isAuthorized.Succeeded == false)            
+            // if authorization fails
+            if (isAuthorized.Succeeded == false)
                 return Forbid();
-            
+
 
             return Page();
         }
@@ -52,18 +53,23 @@ namespace IdentityApp.Pages.Invoices
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
 
-            var invoice = await Context.Invoice.
+            // grabs the invoice from the Database
+            var invoice = await Context.Invoice.AsNoTracking().
                 SingleOrDefaultAsync(m => m.InvoiceId == id);
 
             if (invoice == null)
                 return NotFound();
 
             Invoice.CreatorId = invoice.CreatorId;
+
+            // Authorization to see if user is authorized
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, Invoice, InvoiceOperations.Update);
+
+            if (isAuthorized.Succeeded == false)
+                return Forbid();
 
             Context.Attach(Invoice).State = EntityState.Modified;
 
@@ -88,7 +94,7 @@ namespace IdentityApp.Pages.Invoices
 
         private bool InvoiceExists(int id)
         {
-          return Context.Invoice.Any(e => e.InvoiceId == id);
+            return Context.Invoice.Any(e => e.InvoiceId == id);
         }
     }
 }

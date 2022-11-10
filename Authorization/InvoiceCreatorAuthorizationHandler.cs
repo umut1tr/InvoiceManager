@@ -8,7 +8,6 @@ namespace IdentityApp.Authorization
     public class InvoiceCreatorAuthorizationHandler:
         AuthorizationHandler<OperationAuthorizationRequirement, Invoice>
     {
-
         
         UserManager<IdentityUser> _userManager;
         public InvoiceCreatorAuthorizationHandler(UserManager<IdentityUser> userManager)

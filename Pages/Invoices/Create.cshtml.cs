@@ -9,14 +9,14 @@ namespace IdentityApp.Pages.Invoices
 {
     public class CreateModel : DI_BasePageModel
     {
-        
+
 
         public CreateModel(
             ApplicationDbContext context,
             IAuthorizationService authorizationService,
             UserManager<IdentityUser> userManager)
             : base(context, authorizationService, userManager)
-        {            
+        {
         }
 
         public IActionResult OnGet()
@@ -26,7 +26,7 @@ namespace IdentityApp.Pages.Invoices
 
         [BindProperty]
         public Invoice Invoice { get; set; }
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
@@ -34,6 +34,7 @@ namespace IdentityApp.Pages.Invoices
 
             Invoice.CreatorId = UserManager.GetUserId(User);
 
+            // calls our Authorizationservice
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                 User, Invoice, InvoiceOperations.Create);
 
@@ -41,6 +42,7 @@ namespace IdentityApp.Pages.Invoices
                 return Forbid();
 
             Context.Invoice.Add(Invoice);
+
             await Context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

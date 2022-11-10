@@ -1,31 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using IdentityApp.Data;
 using IdentityApp.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace IdentityApp.Pages.Invoices
 {
-    public class IndexModel : PageModel
+    public class IndexModel : DI_BasePageModel
     {
-        private readonly IdentityApp.Data.ApplicationDbContext _context;
 
-        public IndexModel(IdentityApp.Data.ApplicationDbContext context)
+
+        public IndexModel(
+            ApplicationDbContext context,
+            IAuthorizationService authorization,
+            UserManager<IdentityUser> userManager)
+            : base(context, authorization, userManager)
         {
-            _context = context;
         }
 
-        public IList<Invoice> Invoice { get;set; } = default!;
+        public IList<Invoice> Invoice { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            if (_context.Invoice != null)
+            if (Context.Invoice != null)
             {
-                Invoice = await _context.Invoice.ToListAsync();
+                var currentUserID = UserManager.GetUserId(User);
+
+                Invoice = await Context.Invoice
+                    .Where(i => i.CreatorId == currentUserID)
+                    .ToListAsync();
+
+
             }
         }
     }
