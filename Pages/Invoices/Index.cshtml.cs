@@ -3,7 +3,7 @@ using IdentityApp.Data;
 using IdentityApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-
+using IdentityApp.Authorization;
 
 namespace IdentityApp.Pages.Invoices
 {
@@ -25,12 +25,22 @@ namespace IdentityApp.Pages.Invoices
         {
             if (Context.Invoice != null)
             {
+
+                var invoices = from i in Context.Invoice
+                               select i;
+
+                // check if is manager role
+                var isManager = User.IsInRole(Constants.InvoiceManagersRole);
+                
                 var currentUserID = UserManager.GetUserId(User);
 
-                Invoice = await Context.Invoice
-                    .Where(i => i.CreatorId == currentUserID)
-                    .ToListAsync();
+                // if manager then filter to see only stuff which is created by user via currentUserId
+                if (isManager == false)
+                {
+                    invoices = invoices.Where(i => i.CreatorId == currentUserID);
+                }
 
+                Invoice = await invoices.ToListAsync();
 
             }
         }

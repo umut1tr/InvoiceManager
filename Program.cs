@@ -21,8 +21,8 @@ builder.Services.AddRazorPages();
 // Identity User config
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 5;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 4;
     options.Lockout.MaxFailedAccessAttempts = 3;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
     options.Lockout.AllowedForNewUsers = true;
@@ -39,8 +39,11 @@ builder.Services.AddAuthorization(options =>
     
 });
 
-// everytime using something with Identity use Addscoped to register service else only do Add
-builder.Services.AddScoped<IAuthorizationHandler, InvoiceCreatorAuthorizationHandler>(); // registers our Creator Auth
+// everytime using something with Identity use AddScoped to register service else only do Add a Singleton
+builder.Services.AddScoped<IAuthorizationHandler, InvoiceCreatorAuthorizationHandler>(); // registers our Creator to Auth
+
+// not using any Identity stuff so we can use Singleton here
+builder.Services.AddSingleton<IAuthorizationHandler, InvoiceManagerAuthorizationHandler>(); // register our Manager to Auth
 
 var app = builder.Build();
 
