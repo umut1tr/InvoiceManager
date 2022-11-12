@@ -46,7 +46,7 @@ namespace IdentityApp.Pages.Invoices
                 User, Invoice, InvoiceOperations.Delete);
 
             // if not authorized
-            if (isAuthorized.Succeeded == false)
+            if (!isAuthorized.Succeeded)
                 return Forbid();
 
             return Page();
@@ -71,7 +71,7 @@ namespace IdentityApp.Pages.Invoices
                 User, Invoice, InvoiceOperations.Delete);
 
             // if not authorized
-            if (isAuthorized.Succeeded == false)
+            if (!isAuthorized.Succeeded)
                 return Forbid();
 
             Context.Invoice.Remove(Invoice);

@@ -38,7 +38,7 @@ namespace IdentityApp.Pages.Invoices
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                 User, Invoice, InvoiceOperations.Create);
 
-            if (isAuthorized.Succeeded == false)
+            if (!isAuthorized.Succeeded)
                 return Forbid();
 
             Context.Invoice.Add(Invoice);

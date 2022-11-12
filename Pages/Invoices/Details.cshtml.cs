@@ -36,11 +36,13 @@ namespace IdentityApp.Pages.Invoices
                 return NotFound();
             }
 
-            // Authorization
-            var isAuthorized = await AuthorizationService.AuthorizeAsync(
-                User, Invoice, InvoiceOperations.Delete);
+            // See only stuff if you are default user "Creator"
+            var isCreator = await AuthorizationService.AuthorizeAsync(
+                User, Invoice, InvoiceOperations.Read);
 
-            if (isAuthorized.Succeeded == false)
+            var isManager = User.IsInRole(Constants.InvoiceManagersRole);
+
+            if (!isCreator.Succeeded && !isManager)
             {
                 return Forbid();
             }            

@@ -42,7 +42,7 @@ namespace IdentityApp.Pages.Invoices
                 User, Invoice, InvoiceOperations.Update);
 
             // if authorization fails
-            if (isAuthorized.Succeeded == false)
+            if (!isAuthorized.Succeeded)
                 return Forbid();
 
 
@@ -68,8 +68,12 @@ namespace IdentityApp.Pages.Invoices
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                 User, Invoice, InvoiceOperations.Update);
 
-            if (isAuthorized.Succeeded == false)
+            if (!isAuthorized.Succeeded)
                 return Forbid();
+
+
+            // if Invoice status should not be changed when editing stuff then set the current Invoice the current invoice.status which it had before editing.
+            // Invoice.Status = invoice.Status;
 
             Context.Attach(Invoice).State = EntityState.Modified;
 

@@ -36,7 +36,8 @@ namespace IdentityApp.Authorization
         public static readonly string ApprovedOperationName = "Approved";
         public static readonly string RejectedOperationName = "Rejected";
 
-        public static readonly string InvoiceManagersRole = "InvoiceManager";        
+        public static readonly string InvoiceManagersRole = "InvoiceManager";
+        public static readonly string InvoiceAdminRole = "InvoiceAdmin";
 
 
     }

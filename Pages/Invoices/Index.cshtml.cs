@@ -31,11 +31,13 @@ namespace IdentityApp.Pages.Invoices
 
                 // check if is manager role
                 var isManager = User.IsInRole(Constants.InvoiceManagersRole);
+                var isAdmin = User.IsInRole(Constants.InvoiceAdminRole);
+                
                 
                 var currentUserID = UserManager.GetUserId(User);
 
-                // if manager then filter to see only stuff which is created by user via currentUserId
-                if (isManager == false)
+                // if you are not a manager then you can only see the invoices created by user
+                if (!isManager && !isAdmin)
                 {
                     invoices = invoices.Where(i => i.CreatorId == currentUserID);
                 }

@@ -7,7 +7,7 @@ namespace IdentityApp.Data
 
     // This data will get called later from the Program.CS class when booting up
     public class SeedData
-    {        
+    {
 
 
         // here we cannot use DI so we use ServiceProvider again for DB Context
@@ -17,13 +17,20 @@ namespace IdentityApp.Data
         {
 
             // creates Db context
-            using(var context = new ApplicationDbContext(
+            using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
-                // adds a manager acc
-                var managerUid = await EnsureUser(serviceProvider, "manager@demo.com", password);               
+                // Accountant
+                var accountantUid = await EnsureUser(serviceProvider, "accountant@demo.com", password);
 
+                // Manager
+                var managerUid = await EnsureUser(serviceProvider, "manager@demo.com", password);
                 await EnsureRole(serviceProvider, managerUid, Constants.InvoiceManagersRole);
+
+                // Admin
+                var adminUid = await EnsureUser(serviceProvider, "admin@demo.com", password);
+                await EnsureRole(serviceProvider, adminUid, Constants.InvoiceAdminRole);
+
             }
         }
 
@@ -38,20 +45,20 @@ namespace IdentityApp.Data
             // check first if we already have a user registered with this acount
             var user = await userManager.FindByNameAsync(userName);
 
-            if(user == null)
+            if (user == null)
             {
                 user = new IdentityUser
                 {
                     UserName = userName,
                     Email = userName,
-                    EmailConfirmed = true                  
+                    EmailConfirmed = true
                 };
 
                 // create User
                 var result = await userManager.CreateAsync(user, initPw);
             }
 
-            if(user == null)
+            if (user == null)
             {
                 // if user is not set up corectly for whatever case ? 
                 throw new Exception("User did not get created. Passwod policy problem?");
@@ -69,7 +76,7 @@ namespace IdentityApp.Data
 
             IdentityResult ir;
 
-            if(await roleManager.RoleExistsAsync(role) == false)
+            if (await roleManager.RoleExistsAsync(role) == false)
             {
                 ir = await roleManager.CreateAsync(new IdentityRole(role));
             }

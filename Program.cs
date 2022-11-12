@@ -42,8 +42,9 @@ builder.Services.AddAuthorization(options =>
 // everytime using something with Identity use AddScoped to register service else only do Add a Singleton
 builder.Services.AddScoped<IAuthorizationHandler, InvoiceCreatorAuthorizationHandler>(); // registers our Creator to Auth
 
-// not using any Identity stuff so we can use Singleton here
-builder.Services.AddSingleton<IAuthorizationHandler, InvoiceManagerAuthorizationHandler>(); // register our Manager to Auth
+// not using any Identity stuff so we need to use Singleton here
+builder.Services.AddSingleton<IAuthorizationHandler, InvoiceManagerAuthorizationHandler>(); // register our Auth handler for Manager
+builder.Services.AddSingleton<IAuthorizationHandler, InvoiceAdminAuthorizationHandler>(); // register our Auth handler for Admin
 
 var app = builder.Build();
 
