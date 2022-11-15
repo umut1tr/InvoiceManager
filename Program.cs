@@ -6,8 +6,14 @@ using IdentityApp.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// gets connectionString from secrets.json file
+var connectionString = builder.Configuration.GetValue<string>("DBConnectionString");
+
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// old method gets DB connectionString from appsettings.json
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -50,8 +56,17 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var seedUserPass = builder.Configuration.GetValue<string>("SeedUserPass");
+
     var services = scope.ServiceProvider;
+
+    // this will check if a DB is concurrent if not then it will try to apply and migrate a DB on hosting machine
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+
+    // this gets the credentials saved in the secret.json in user secrets manager 
+    var seedUserPass = builder.Configuration.GetValue<string>("SeedUserPass");
+    
+    // initialize accountant/manager/admin user accounts
     await SeedData.Initialize(services, seedUserPass);
 }
 
