@@ -36,7 +36,7 @@ namespace IdentityApp.Pages.Invoices
                 
                 var currentUserID = UserManager.GetUserId(User);
 
-                // if you are not a manager then you can only see the invoices created by user
+                // if you are not a manager/admin then you can only see the invoices created by user
                 if (!isManager && !isAdmin)
                 {
                     invoices = invoices.Where(i => i.CreatorId == currentUserID);

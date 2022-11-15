@@ -46,34 +46,36 @@
 </div>
 
 @{
-    var isIAuthorizeData = await AuthorizationService.AuthorizeAsync(
-                User, Model.Invoice, InvoiceOperation.Rejected
-            );
-}
+    // checks basically if we are a manager because of the rejected operation
+    var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, Model.Invoice, InvoiceOperations.Rejected);
 
-@if (Model.Invoice.Status != InvoiceStatus.Approved)
-{
-    <form style="display:inline;" method="post">
-        <input hidden name="id" value="@Model.Invoice.InvoiceId">
-        <input hidden name="status" value="@InvoiceStatus.Approved">
-        <button type="submit" class="btn btn-xs btn-success">Approve</button>
-    </form>
+    @if (isAuthorized.Succeeded)
+    {
+        @if (Model.Invoice.Status != InvoiceStatus.Approved)
+        {
+            <form style="display:inline;" method="post">
+                <input hidden name="id" value="@Model.Invoice.InvoiceId">
+                <input hidden name="status" value="@InvoiceStatus.Approved">
+                <button type="submit" class="btn btn-xs btn-success">Approve</button>
+            </form>
+        }
 
-
-
-}
-
-@if (Model.Invoice.Status != InvoiceStatus.Rejected)
-{
-    <form style="display:inline;" method="post">
-        <input hidden name="id" value="@Model.Invoice.InvoiceId">
-        <input hidden name="status" value="@InvoiceStatus.Rejected">
-        <button type="submit" class="btn btn-xs btn-danger">Reject</button>
-    </form>
+        @if (Model.Invoice.Status != InvoiceStatus.Rejected)
+        {
+            <form style="display:inline;" method="post">
+                <input hidden name="id" value="@Model.Invoice.InvoiceId">
+                <input hidden name="status" value="@InvoiceStatus.Rejected">
+                <button type="submit" class="btn btn-xs btn-danger">Reject</button>
+            </form>
+        }
+    }
 }
 
 
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Invoice?.InvoiceId">Edit</a> |
+    @if(!isAuthorized.Succeeded){
+        <a asp-page="./Edit" asp-route-id="@Model.Invoice?.InvoiceId">Edit</a>
+    }    
     <a asp-page="./Index">Back to List</a>
 </div>

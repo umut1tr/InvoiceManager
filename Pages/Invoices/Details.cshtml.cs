@@ -49,5 +49,34 @@ namespace IdentityApp.Pages.Invoices
             
             return Page();
         }
+
+        public async Task<IActionResult> OnPostAsync(int id, InvoiceStatus status)
+        {
+            // get current invoice via id
+            Invoice = await Context.Invoice.FindAsync(id);
+
+            if (Invoice == null)
+                return NotFound();
+
+            var invoiceOperation = status == InvoiceStatus.Approved
+                ? InvoiceOperations.Approved
+                : InvoiceOperations.Rejected;
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                User, Invoice, invoiceOperation);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
+            Invoice.Status = status;
+            Context.Invoice.Update(Invoice);
+
+            await Context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
+
+        }
     }
 }
