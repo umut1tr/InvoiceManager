@@ -13,7 +13,7 @@ namespace IdentityApp.Data
         // here we cannot use DI so we use ServiceProvider again for DB Context
         public static async Task Initialize(
             IServiceProvider serviceProvider,
-            string password = "Demo1234!")
+            string password)
         {
 
             // creates Db context
